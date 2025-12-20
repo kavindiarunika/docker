@@ -1,0 +1,40 @@
+services:
+  mongo:
+    image: mongo
+    container_name: mongo-container
+    volumes:
+      - mongo-data:/data/db
+
+    ports:
+      - "27017:27017"
+
+  server:
+      build: ./server
+      container_name: server-container
+      ports:
+        - "5000:5000" 
+      depends_on:
+         - mongo
+      volumes:
+        - ./server:/app
+        - /app/node_modules
+      environment:
+        - name=value
+
+
+  client:
+      build: ./client
+      container_name: client-container
+      ports:
+        - "5173:5173"
+      depends_on :
+        - server
+
+      stdin_open: true
+      tty: true
+      volumes:
+        - ./client/:app
+        - /app/node_modules
+      
+volumes:
+  mongo-data:
